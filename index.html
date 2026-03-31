@@ -167,50 +167,6 @@
 </body>
 </html>
 
-/* =========================
-   CRIE ESTES ARQUIVOS SEPARADOS
-   ========================= */
-
-/* manifest.json */
-{
-  "name": "Bela Móveis App",
-  "short_name": "BelaApp",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#111111",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    }
-  ]
-}
-
-/* sw.js */
-self.addEventListener('install', event => {
-  self.skipWaiting();
-});
-
-self.addEventListener('fetch', event => {
-  return;
-});
-
-/* =========================
-   COMO PUBLICAR (GRÁTIS)
-   =========================
-
-1. Acesse: https://vercel.com ou https://netlify.com
-2. Crie conta
-3. Clique em "New Project"
-4. Envie estes arquivos:
-   - index.html
-   - manifest.json
-   - sw.js
-   - icon.png
-5. Publicar
-
 Pronto! Vai gerar um link tipo:
 https://seuapp.vercel.app
 
