@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bela Móveis App</title>
+
+  <!-- PWA Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111111">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 300px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #111;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .topbar {
+      background: #111;
+      color: white;
+      padding: 10px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: calc(100vh - 50px);
+      border: none;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="loginContainer">
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
+</div>
+
+<div class="topbar" id="topbar">
+  <span>Bela Móveis</span>
+  <button onclick="logout()">Sair</button>
+</div>
+
+<iframe id="appFrame"></iframe>
+
+<script>
+  const USER = "FILIAL50";
+  const PASS = "FILIAL50";
+  const URL = "https://belamoveis.sempretecnologia.com.br/seg001_1/seg001_1.php";
+
+  function login() {
+    const userInput = document.getElementById('user');
+    const passInput = document.getElementById('pass');
+
+    // Validação para evitar erro null
+    if (!userInput || !passInput) {
+      alert('Erro interno: campos de login não encontrados');
+      return;
+    }
+
+    const u = userInput.value;
+    const p = passInput.value;
+
+    if (u === USER && p === PASS) {
+      localStorage.setItem('auth', 'true');
+      openApp();
+    } else {
+      alert('Usuário ou senha inválidos');
+    }
+  }
+
+  function openApp() {
+    document.getElementById('loginContainer').style.display = 'none';
+    document.getElementById('topbar').style.display = 'flex';
+
+    const frame = document.getElementById('appFrame');
+    frame.style.display = 'block';
+    frame.src = URL;
+
+    // fallback caso iframe bloqueie
+    setTimeout(() => {
+      try {
+        if (!frame.contentWindow || frame.contentWindow.length === 0) {
+          window.location.href = URL;
+        }
+      } catch (e) {
+        window.location.href = URL;
+      }
+    }, 3000);
+  }
+
+  function logout() {
+    localStorage.removeItem('auth');
+    location.reload();
+  }
+
+  // Auto login se já estiver autenticado
+  if (localStorage.getItem('auth') === 'true') {
+    openApp();
+  }
+
+  // Registrar Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+
+  /* =========================
+     TESTES SIMPLES (DEBUG)
+     ========================= */
+
+  function testLoginSuccess() {
+    document.getElementById('user').value = USER;
+    document.getElementById('pass').value = PASS;
+    login();
+  }
+
+  function testLoginFail() {
+    document.getElementById('user').value = 'errado';
+    document.getElementById('pass').value = '123';
+    login();
+  }
+</script>
+
+</body>
+</html>
+
+/* =========================
+   CRIE ESTES ARQUIVOS SEPARADOS
+   ========================= */
+
+/* manifest.json */
+{
+  "name": "Bela Móveis App",
+  "short_name": "BelaApp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+
+/* sw.js */
+self.addEventListener('install', event => {
+  self.skipWaiting();
+});
+
+self.addEventListener('fetch', event => {
+  return;
+});
+
+/* =========================
+   COMO PUBLICAR (GRÁTIS)
+   =========================
+
+1. Acesse: https://vercel.com ou https://netlify.com
+2. Crie conta
+3. Clique em "New Project"
+4. Envie estes arquivos:
+   - index.html
+   - manifest.json
+   - sw.js
+   - icon.png
+5. Publicar
+
+Pronto! Vai gerar um link tipo:
+https://seuapp.vercel.app
+
+*/
